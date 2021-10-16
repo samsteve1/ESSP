@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CampaignStoreRequest;
+use App\Http\Resources\CampaignResource;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
 
@@ -14,7 +16,8 @@ class CampaignController extends Controller
      */
     public function index()
     {
-        //
+        $campaigns = Campaign::get();
+        return response()->json(CampaignResource::collection($campaigns), 200);
     }
 
     /**
@@ -24,7 +27,6 @@ class CampaignController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -33,9 +35,9 @@ class CampaignController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CampaignStoreRequest $request)
     {
-        //
+        //Campaign::create([]);
     }
 
     /**

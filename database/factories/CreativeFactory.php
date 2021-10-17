@@ -22,7 +22,7 @@ class CreativeFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'path' =>  'test' //$this->faker->imageUrl($width = 640, $height = 480)
         ];
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Essp\Money;
 use App\Traits\HasCreative;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Campaign extends Model
 {
@@ -42,7 +43,7 @@ class Campaign extends Model
     /**
      * Return the daily budget formatted in USD.
      */
-    public function getDailyBudgetFormatted()
+    public function getDailyBudgetFormattedAttribute()
     {
         return $this->daily_budget->formatted();
     }

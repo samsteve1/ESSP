@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Image;
 use App\Http\Requests\CampaignStoreRequest;
 use App\Http\Resources\CampaignResource;
 use App\Models\Campaign;
+use CreativeUploadFailedException;
+use Exception;
 use Illuminate\Http\Request;
 
 class CampaignController extends Controller
@@ -16,7 +19,7 @@ class CampaignController extends Controller
      */
     public function index()
     {
-        $campaigns = Campaign::get();
+        $campaigns = Campaign::latest()->get();
         return response()->json(CampaignResource::collection($campaigns), 200);
     }
 
@@ -37,7 +40,6 @@ class CampaignController extends Controller
      */
     public function store(CampaignStoreRequest $request)
     {
-        //Campaign::create([]);
     }
 
     /**
@@ -71,17 +73,33 @@ class CampaignController extends Controller
      */
     public function update(Request $request, Campaign $campaign)
     {
-        //
+        $campaign = Campaign::create([
+            'name' => $request->name,
+            'daily_budget' => $request->daily_budget,
+            'total_budget' => $request->total_budget,
+            'from' => $request->from,
+            'to' => $request->to
+        ]);
+
+        $this->uploadCreativeImages($campaign, $request);
+
+        return response()->json(201);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Campaign  $campaign
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Campaign $campaign)
+    private function uploadCreativeImages(Campaign $campaign, CampaignStoreRequest $request)
     {
-        //
+        try {
+            $creatives = $request->file('creatives');
+            foreach ($creatives as $creative) {
+                $basePath = '/images/creatives' . microtime() . '.' . $creative->getClientOriginalExtension();
+                $creativePath = public_path() . $basePath;
+                $newImage = Image::make($creative);
+                $newImage->save($creativePath);
+
+                $campaign->creatives()->create(['path' => $creativePath]);
+            }
+        } catch (Exception) {
+            throw new CreativeUploadFailedException("Failed to upload creative image.");
+        }
     }
 }

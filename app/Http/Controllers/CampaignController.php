@@ -117,7 +117,7 @@ class CampaignController extends Controller
                 }
             }
         } catch (Exception $e) {
-            throw $e; //new CreativeUploadFailedException("Failed to upload creative image.");
+            throw new CreativeUploadFailedException("Failed to upload creative image.");
         }
     }
 }

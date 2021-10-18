@@ -29,7 +29,7 @@ class CampaignUpdateRequest extends FormRequest
             'from' => 'required',
             'daily_budget' => 'required|numeric',
             'total_budget' => 'required|numeric',
-            'creatives.*' => 'required|image'
+            'creatives.*' => 'image'
         ];
     }
     public function messages()

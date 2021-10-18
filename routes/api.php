@@ -22,5 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'campaigns', 'as' => 'campaigns.'], function () {
     Route::get('', [CampaignController::class, 'index'])->name('all');
     Route::post('', [CampaignController::class, 'store'])->name('store');
-    Route::patch('', [CampaignController::class, 'update'])->name('update');
+    Route::patch('/{campaign}', [CampaignController::class, 'update'])->name('update');
 });

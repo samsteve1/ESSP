@@ -3,7 +3,7 @@
     <div class="row justify-content-center">
       <div class="col-md-10">
         <div class="card">
-          <div class="card-header"><h4>Create campaign</h4></div>
+          <div class="card-header"><h4>Edit campaign</h4></div>
           <div class="card-body">
             <div class="row">
               <div class="col">
@@ -12,7 +12,7 @@
                 >
               </div>
             </div>
-            <form @submit.prevent="submit">
+            <form @submit.prevent="update">
               <span class="text-danger my-1" v-if="errors.store">{{
                 errors.store
               }}</span>
@@ -92,7 +92,6 @@
                   id="creative_uploads"
                   placeholder="Choose creative uploads"
                   multiple
-                  required
                   @change="creativeUploadAdded($event)"
                 />
                 <small v-if="errors.creativeUpload" class="text-danger">{{
@@ -109,7 +108,7 @@
                 }"
                 :disabled="submitting"
               >
-                {{ submitting ? "Submitting" : "Submit" }}
+                {{ submitting ? "Updating" : "Update" }}
               </button>
             </form>
           </div>
@@ -119,5 +118,86 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      errors: {},
+      submitting: false,
+      campaign: {
+        name: null,
+        startDate: null,
+        endDate: null,
+        dailyBudget: null,
+        totalBudget: null,
+        creativeUploads: [],
+      },
+      errors: { creativeUpload: null, store: null },
+      successNotification: null,
+    };
+  },
+  mounted() {
+    this.campaign.name = this.campaignResource.name;
+    this.campaign.startDate = this.campaignResource.from;
+    this.campaign.endDate = this.campaignResource.to;
+    this.campaign.dailyBudget = this.campaignResource.daily_budget_amount;
+    this.campaign.totalBudget = this.campaignResource.total_budget_amount;
+  },
+  props: {
+    campaignResource: {
+      type: Object,
+      required: true,
+    },
+  },
+  methods: {
+    creativeUploadAdded(event) {
+      let files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        if (
+          files[i].type === "image/png" ||
+          files[i].type === "image/jpeg" ||
+          files[i].type === "image/jpg"
+        ) {
+          this.campaign.creativeUploads.push(files[i]);
+          this.errors.creativeUpload = null;
+        } else {
+          this.errors.creativeUpload =
+            " Uploaded image(s) must be image format.";
+        }
+      }
+    },
+    update() {
+      this.submitting = true;
+      const formData = new FormData();
+      formData.append("name", this.campaign.name);
+      formData.append("daily_budget", parseFloat(this.campaign.dailyBudget));
+      formData.append("total_budget", parseFloat(this.campaign.totalBudget));
+      formData.append("to", this.campaign.endDate);
+      formData.append("from", this.campaign.startDate);
+      formData.append("_method", "PATCH");
+      for (let i = 0; i < this.campaign.creativeUploads.length; i++) {
+        formData.append(
+          "creatives[" + i + "]",
+          this.campaign.creativeUploads[i]
+        );
+      }
+
+      axios
+        .post("/api/campaigns/" + this.campaignResource.id, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          this.errors.store = null;
+          this.submitting = false;
+          this.successNotification = "Advertisement campaign updated.";
+        })
+        .catch(() => {
+          this.errors.store =
+            "Failed to save advertisement campaign. Please try again.";
+          this.submitting = false;
+        });
+    },
+  },
+};
 </script>

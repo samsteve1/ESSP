@@ -20,4 +20,4 @@ Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaign.create');
-Route::get('campaign/{id}/edit', [CampaignController::class, 'edit'])->name('campaign.edit');
+Route::get('/campaigns/{campaign}/edit', [CampaignController::class, 'edit'])->name('campaign.edit');

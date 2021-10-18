@@ -164,14 +164,14 @@ export default {
           },
         })
         .then((response) => {
-          this.errors.submit = null;
+          this.errors.store = null;
           this.submitting = false;
-          this.successNotification = "Advertisement campaign saved.";
+          this.successNotification = "Advertisement campaign updated.";
           this.resetCampaignForm();
         })
         .catch(() => {
           this.errors.store =
-            "Failed to save advertisement campaign. Please try again.";
+            "Failed to update advertisement campaign. Please try again.";
           this.submitting = false;
         });
     },

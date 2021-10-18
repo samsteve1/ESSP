@@ -22,11 +22,11 @@ class CampaignResource extends JsonResource
             'daily_budget_amount' => $this->daily_budget_amount,
             'total_budget_formatted' => $this->total_budget_formatted,
             'total_budget_amount' => $this->total_budget_amount,
-            'from' => Carbon::parse($this->from)->isoFormat('MMMM Do YYYY, h:mm:ss a'),
-            'to' => Carbon::parse($this->to)->isoFormat('MMMM Do YYYY, h:mm:ss a'),
+            'from' => Carbon::parse($this->from)->isoFormat('YYYY-MM-DD'),
+            'to' => Carbon::parse($this->to)->isoFormat('YYYY-MM-DD'),
             'creatives' => CreativeResource::collection($this->creatives),
-            'created_at' => $this->created_at->isoFormat('MMMM Do YYYY, h:mm:ss a'),
-            'updated_at' => $this->updated_at->isoFormat('MMMM Do YYYY, h:mm:ss a')
+            'created_at' => $this->created_at->isoFormat('YYYY-MM-DD'),
+            'updated_at' => $this->updated_at->isoFormat('YYYY-MM-DD')
         ];
     }
 }

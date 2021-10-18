@@ -28,6 +28,7 @@
                       <th scope="col">From</th>
                       <th scope="col">To</th>
                       <th scope="col"></th>
+                      <th scope="col"></th>
                     </tr>
                   </thead>
 
@@ -40,12 +41,19 @@
                       <td>{{ campaign.from }}</td>
                       <td>{{ campaign.to }}</td>
                       <td>
-                        <button
+                        <a
                           class="btn btn-secondary btn-sm"
                           @click="viewCreatives(campaign.creatives)"
                         >
                           <span class="text-sm">View creatives</span>
-                        </button>
+                        </a>
+                      </td>
+                      <td>
+                        <a
+                          class="btn btn-primary btn-sm"
+                          :href="'campaigns/' + campaign.id + '/edit'"
+                          ><i class="fa fa-edit"></i> Edit</a
+                        >
                       </td>
                     </tr>
                   </tbody>

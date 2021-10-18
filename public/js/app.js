@@ -2244,13 +2244,13 @@ __webpack_require__.r(__webpack_exports__);
           "Content-Type": "multipart/form-data"
         }
       }).then(function (response) {
-        _this.errors.submit = null;
+        _this.errors.store = null;
         _this.submitting = false;
-        _this.successNotification = "Advertisement campaign saved.";
+        _this.successNotification = "Advertisement campaign updated.";
 
         _this.resetCampaignForm();
       })["catch"](function () {
-        _this.errors.store = "Failed to save advertisement campaign. Please try again.";
+        _this.errors.store = "Failed to update advertisement campaign. Please try again.";
         _this.submitting = false;
       });
     },
@@ -2290,6 +2290,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -2409,8 +2411,83 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  data: function data() {
+    var _ref;
+
+    return _ref = {
+      errors: {},
+      submitting: false,
+      campaign: {
+        name: null,
+        startDate: null,
+        endDate: null,
+        dailyBudget: null,
+        totalBudget: null,
+        creativeUploads: []
+      }
+    }, _defineProperty(_ref, "errors", {
+      creativeUpload: null,
+      store: null
+    }), _defineProperty(_ref, "successNotification", null), _ref;
+  },
+  mounted: function mounted() {
+    this.campaign.name = this.campaignResource.name;
+    this.campaign.startDate = this.campaignResource.from;
+    this.campaign.endDate = this.campaignResource.to;
+    this.campaign.dailyBudget = this.campaignResource.daily_budget_amount;
+    this.campaign.totalBudget = this.campaignResource.total_budget_amount;
+  },
+  props: {
+    campaignResource: {
+      type: Object,
+      required: true
+    }
+  },
+  methods: {
+    creativeUploadAdded: function creativeUploadAdded(event) {
+      var files = event.target.files;
+
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].type === "image/png" || files[i].type === "image/jpeg" || files[i].type === "image/jpg") {
+          this.campaign.creativeUploads.push(files[i]);
+          this.errors.creativeUpload = null;
+        } else {
+          this.errors.creativeUpload = " Uploaded image(s) must be image format.";
+        }
+      }
+    },
+    update: function update() {
+      var _this = this;
+
+      this.submitting = true;
+      var formData = new FormData();
+      formData.append("name", this.campaign.name);
+      formData.append("daily_budget", parseFloat(this.campaign.dailyBudget));
+      formData.append("total_budget", parseFloat(this.campaign.totalBudget));
+      formData.append("to", this.campaign.endDate);
+      formData.append("from", this.campaign.startDate);
+      formData.append("_method", "PATCH");
+
+      for (var i = 0; i < this.campaign.creativeUploads.length; i++) {
+        formData.append("creatives[" + i + "]", this.campaign.creativeUploads[i]);
+      }
+
+      axios.post("/api/campaigns/" + this.campaignResource.id, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(function (response) {
+        _this.errors.store = null;
+        _this.submitting = false;
+        _this.successNotification = "Advertisement campaign updated.";
+      })["catch"](function () {
+        _this.errors.store = "Failed to save advertisement campaign. Please try again.";
+        _this.submitting = false;
+      });
+    }
+  }
+});
 
 /***/ }),
 
@@ -2436,6 +2513,14 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -39503,7 +39588,7 @@ var render = function() {
                 on: {
                   submit: function($event) {
                     $event.preventDefault()
-                    return _vm.submit.apply(null, arguments)
+                    return _vm.update.apply(null, arguments)
                   }
                 }
               },
@@ -39706,8 +39791,7 @@ var render = function() {
                       name: "creative_uploads[]",
                       id: "creative_uploads",
                       placeholder: "Choose creative uploads",
-                      multiple: "",
-                      required: ""
+                      multiple: ""
                     },
                     on: {
                       change: function($event) {
@@ -39736,7 +39820,7 @@ var render = function() {
                   [
                     _vm._v(
                       "\n              " +
-                        _vm._s(_vm.submitting ? "Submitting" : "Submit") +
+                        _vm._s(_vm.submitting ? "Updating" : "Update") +
                         "\n            "
                     )
                   ]
@@ -39755,7 +39839,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "card-header" }, [
-      _c("h4", [_vm._v("Create campaign")])
+      _c("h4", [_vm._v("Edit campaign")])
     ])
   },
   function() {
@@ -39852,7 +39936,7 @@ var render = function() {
                                   _vm._v(" "),
                                   _c("td", [
                                     _c(
-                                      "button",
+                                      "a",
                                       {
                                         staticClass: "btn btn-secondary btn-sm",
                                         on: {
@@ -39867,6 +39951,23 @@ var render = function() {
                                         _c("span", { staticClass: "text-sm" }, [
                                           _vm._v("View creatives")
                                         ])
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _c(
+                                      "a",
+                                      {
+                                        staticClass: "btn btn-primary btn-sm",
+                                        attrs: {
+                                          href:
+                                            "campaigns/" + campaign.id + "/edit"
+                                        }
+                                      },
+                                      [
+                                        _c("i", { staticClass: "fa fa-edit" }),
+                                        _vm._v(" Edit")
                                       ]
                                     )
                                   ])
@@ -39948,6 +40049,8 @@ var staticRenderFns = [
         _c("th", { attrs: { scope: "col" } }, [_vm._v("From")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("To")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } })
       ])

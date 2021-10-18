@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\CampaignController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Models\Campaign;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,10 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaign.create');
+Route::get('campaign/{id}/edit', [CampaignController::class, 'edit'])->name('campaign.edit');

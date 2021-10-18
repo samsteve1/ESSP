@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Image;
-use App\Http\Requests\CampaignStoreRequest;
-use App\Http\Resources\CampaignResource;
-use App\Models\Campaign;
-use CreativeUploadFailedException;
 use Exception;
+use App\Models\Campaign;
 use Illuminate\Http\Request;
+use App\Http\Resources\CampaignResource;
+use App\Http\Requests\CampaignStoreRequest;
+use App\Exceptions\CreativeUploadFailedException;
 
 class CampaignController extends Controller
 {
@@ -30,6 +30,7 @@ class CampaignController extends Controller
      */
     public function create()
     {
+        return view('campaigns.create');
     }
 
     /**
@@ -40,7 +41,19 @@ class CampaignController extends Controller
      */
     public function store(CampaignStoreRequest $request)
     {
+        $campaign = Campaign::create([
+            'name' => $request->name,
+            'daily_budget' => $request->daily_budget * 100, //  Multiply amount by 100, the PHP money package calculates money in cents.
+            'total_budget' => $request->total_budget * 100,
+            'from' => $request->from,
+            'to' => $request->to
+        ]);
+
+        $this->uploadCreativeImages($campaign, $request);
+
+        return response()->json(201);
     }
+
 
     /**
      * Display the specified resource.
@@ -73,17 +86,6 @@ class CampaignController extends Controller
      */
     public function update(Request $request, Campaign $campaign)
     {
-        $campaign = Campaign::create([
-            'name' => $request->name,
-            'daily_budget' => $request->daily_budget,
-            'total_budget' => $request->total_budget,
-            'from' => $request->from,
-            'to' => $request->to
-        ]);
-
-        $this->uploadCreativeImages($campaign, $request);
-
-        return response()->json(201);
     }
 
     private function uploadCreativeImages(Campaign $campaign, CampaignStoreRequest $request)
@@ -91,15 +93,15 @@ class CampaignController extends Controller
         try {
             $creatives = $request->file('creatives');
             foreach ($creatives as $creative) {
-                $basePath = '/images/creatives' . microtime() . '.' . $creative->getClientOriginalExtension();
+                $basePath = '/images/creatives/' . md5(microtime()) . '.' . $creative->getClientOriginalExtension();
                 $creativePath = public_path() . $basePath;
                 $newImage = Image::make($creative);
                 $newImage->save($creativePath);
 
-                $campaign->creatives()->create(['path' => $creativePath]);
+                $campaign->creatives()->create(['path' => config('app.url')  . $basePath]);
             }
-        } catch (Exception) {
-            throw new CreativeUploadFailedException("Failed to upload creative image.");
+        } catch (Exception $e) {
+            throw $e; //new CreativeUploadFailedException("Failed to upload creative image.");
         }
     }
 }

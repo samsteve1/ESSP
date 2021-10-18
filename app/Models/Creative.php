@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Creative extends Model
 {
     use HasFactory;
-
+    protected $fillable = ['path'];
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);

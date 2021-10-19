@@ -13,6 +13,15 @@ use App\Exceptions\CreativeUploadFailedException;
 
 class CampaignController extends Controller
 {
+
+    /**
+     * Return campaign list page
+     */
+
+    public function list()
+    {
+        return view('campaigns.index');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -53,18 +62,6 @@ class CampaignController extends Controller
         $this->uploadCreativeImages($campaign, $request);
 
         return response()->json('Campaign created.', 201);
-    }
-
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Campaign  $campaign
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Campaign $campaign)
-    {
-        //
     }
 
     /**
